@@ -5,12 +5,18 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 ### First, run the development server:
 
 ```bash
-npm run dev
+npm run dev:all
 ```
 
 Open [http://localhost:3008](http://localhost:3008) with your browser to see the result.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Inter](https://fonts.google.com/specimen/Inter).
+
+Configure the webhook in Clerk and paste the following URL in `Endpoint URL`:
+
+```
+https://great-lamprey-subtly.ngrok-free.app/api/users/webhook
+```
 
 ### Run the drizzle studio:
 
