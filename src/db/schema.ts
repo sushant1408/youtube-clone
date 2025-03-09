@@ -18,3 +18,14 @@ export const users = pgTable(
   },
   (t) => [uniqueIndex("clerk_id_index").on(t.clerkId)]
 );
+
+export const categories = pgTable(
+  "categories",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: text("name").notNull().unique(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex("name_index").on(t.name)]
+);
