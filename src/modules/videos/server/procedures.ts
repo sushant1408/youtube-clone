@@ -7,6 +7,7 @@ import { db } from "@/db";
 import { videos, videoUpdateSchema } from "@/db/schema";
 import { muxClient } from "@/lib/mux";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
+import { workflowClient } from "@/lib/workflow";
 
 const videoProcedure = createTRPCRouter({
   create: protectedProcedure.mutation(async ({ ctx }) => {
@@ -88,7 +89,7 @@ const videoProcedure = createTRPCRouter({
       }
 
       const utapi = new UTApi();
-      
+
       if (removedVideo.thumbnailKey) {
         await utapi.deleteFiles(removedVideo.thumbnailKey);
       }
@@ -161,6 +162,55 @@ const videoProcedure = createTRPCRouter({
       }
 
       return updatedVideo;
+    }),
+  generateTitle: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().uuid(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id: userId } = ctx.user;
+
+      const { workflowRunId } = await workflowClient.trigger({
+        url: `${process.env.UPSTASH_WORKFLOW_URL}/api/videos/workflows/title`,
+        body: { userId, videoId: input.id },
+      });
+
+      return workflowRunId;
+    }),
+  generateDescription: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().uuid(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id: userId } = ctx.user;
+
+      const { workflowRunId } = await workflowClient.trigger({
+        url: `${process.env.UPSTASH_WORKFLOW_URL}/api/videos/workflows/description`,
+        body: { userId, videoId: input.id },
+      });
+
+      return workflowRunId;
+    }),
+  generateThumbnail: protectedProcedure
+    .input(
+      z.object({
+        prompt: z.string().min(10),
+        id: z.string().uuid(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id: userId } = ctx.user;
+
+      const { workflowRunId } = await workflowClient.trigger({
+        url: `${process.env.UPSTASH_WORKFLOW_URL}/api/videos/workflows/thumbnail`,
+        body: { userId, videoId: input.id, prompt: input.prompt },
+      });
+
+      return workflowRunId;
     }),
 });
 
