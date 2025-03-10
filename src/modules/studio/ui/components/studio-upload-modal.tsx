@@ -4,7 +4,7 @@ import { Loader2Icon, PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-import { ResponsiveDialog } from "@/components/responsive-dialog";
+import { ResponsiveModal } from "@/components/responsive-modal";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/trpc/client";
 import { StudioUploader } from "./studio-uploader";
@@ -47,7 +47,7 @@ const StudioUploadModal = () => {
         Create
       </Button>
 
-      <ResponsiveDialog
+      <ResponsiveModal
         title="Upload a video"
         open={!!create.data?.url}
         onOpenChange={() => create.reset()}
@@ -57,7 +57,7 @@ const StudioUploadModal = () => {
         ) : (
           <Loader2Icon className="animate-spin" />
         )}
-      </ResponsiveDialog>
+      </ResponsiveModal>
     </>
   );
 };

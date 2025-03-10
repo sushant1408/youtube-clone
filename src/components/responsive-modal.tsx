@@ -14,19 +14,19 @@ import {
 } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-interface ResponsiveDialogProps {
+interface ResponsiveModalProps {
   children: ReactNode;
   open: boolean;
   title: string;
   onOpenChange: (open: boolean) => void;
 }
 
-const ResponsiveDialog = ({
+const ResponsiveModal = ({
   children,
   onOpenChange,
   open,
   title,
-}: ResponsiveDialogProps) => {
+}: ResponsiveModalProps) => {
   const isMobile = useIsMobile();
 
   if (isMobile) {
@@ -54,4 +54,4 @@ const ResponsiveDialog = ({
   );
 };
 
-export { ResponsiveDialog };
+export { ResponsiveModal };

@@ -32,7 +32,7 @@ const StudioSidebarHeader = () => {
         <SidebarMenuButton tooltip="Your channel" asChild>
           <Link href="/users/current">
             <UserAvatar
-              name={user.fullName ?? "User"}
+              name={user.fullName || "User"}
               imageUrl={user.imageUrl}
               size="xs"
             />
@@ -47,7 +47,7 @@ const StudioSidebarHeader = () => {
     <SidebarHeader className="flex items-center justify-center pb-4">
       <Link href="/users/current">
         <UserAvatar
-          name={user.fullName ?? "User"}
+          name={user.fullName || "User"}
           imageUrl={user.imageUrl}
           className="size-[112px] hover:opacity-80 transition-opacity"
         />
