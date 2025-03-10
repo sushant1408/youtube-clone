@@ -1,4 +1,4 @@
-import { CategoriesSection } from "@/modules/categories/components/categories-section";
+import { CategoriesSection } from "@/modules/home/ui/components/categories-section";
 
 interface HomeViewProps {
   categoryId?: string;
