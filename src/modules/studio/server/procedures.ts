@@ -6,7 +6,7 @@ import { videos } from "@/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
 
-const studioProcedure = createTRPCRouter({
+const studioRouter = createTRPCRouter({
   getOne: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
@@ -81,4 +81,4 @@ const studioProcedure = createTRPCRouter({
     }),
 });
 
-export { studioProcedure };
+export { studioRouter };

@@ -4,7 +4,7 @@ import { UTApi } from "uploadthing/server";
 import { z } from "zod";
 
 import { db } from "@/db";
-import { users, videos, videoUpdateSchema } from "@/db/schema";
+import { users, videos, videoUpdateSchema, videoViews } from "@/db/schema";
 import { muxClient } from "@/lib/mux";
 import { workflowClient } from "@/lib/workflow";
 import {
@@ -13,7 +13,7 @@ import {
   protectedProcedure,
 } from "@/trpc/init";
 
-const videoProcedure = createTRPCRouter({
+const videoRouter = createTRPCRouter({
   getOne: baseProcedure
     .input(
       z.object({
@@ -27,6 +27,7 @@ const videoProcedure = createTRPCRouter({
           user: {
             ...getTableColumns(users),
           },
+          viewCount: db.$count(videoViews, eq(videoViews.videoId, videos.id)),
         })
         .from(videos)
         .innerJoin(users, eq(videos.userId, users.id))
@@ -242,4 +243,4 @@ const videoProcedure = createTRPCRouter({
     }),
 });
 
-export { videoProcedure };
+export { videoRouter };
