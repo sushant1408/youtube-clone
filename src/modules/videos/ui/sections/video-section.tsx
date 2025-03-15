@@ -6,9 +6,12 @@ import { ErrorBoundary } from "react-error-boundary";
 
 import { cn } from "@/lib/utils";
 import { VideoBanner } from "@/modules/videos/ui/components/video-banner";
-import { VideoPlayer } from "@/modules/videos/ui/components/video-player";
+import {
+  VideoPlayer,
+  VideoPlayerSkeleton,
+} from "@/modules/videos/ui/components/video-player";
 import { trpc } from "@/trpc/client";
-import { VideoTopRow } from "../components/video-top-row";
+import { VideoTopRow, VideoTopRowSkeleton } from "../components/video-top-row";
 
 interface VideoSectionProps {
   videoId: string;
@@ -25,7 +28,12 @@ const VideoSection = ({ videoId }: VideoSectionProps) => {
 };
 
 const VideoSectionSkeleton = () => {
-  return <></>;
+  return (
+    <>
+      <VideoPlayerSkeleton />
+      <VideoTopRowSkeleton />
+    </>
+  );
 };
 
 const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
