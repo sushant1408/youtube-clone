@@ -39,6 +39,7 @@ export const userRelations = relations(users, ({ many }) => ({
     relationName: "subscriptions_creator_id_fkey",
   }),
   comments: many(comments),
+  commentReactions: many(commentReactions),
 }));
 
 export const subscriptions = pgTable(
@@ -222,7 +223,7 @@ export const commentsInsertSchema = createInsertSchema(comments);
 export const commentsUpdateSchema = createUpdateSchema(comments);
 export const commentsSelectSchema = createSelectSchema(comments);
 
-export const commentsRelations = relations(comments, ({ one }) => ({
+export const commentsRelations = relations(comments, ({ one, many }) => ({
   user: one(users, {
     fields: [comments.userId],
     references: [users.id],
@@ -231,4 +232,44 @@ export const commentsRelations = relations(comments, ({ one }) => ({
     fields: [comments.videoId],
     references: [videos.id],
   }),
+  reactions: many(commentReactions),
 }));
+
+export const commentReactions = pgTable(
+  "comment_reactions",
+  {
+    userId: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    commentId: uuid("comment_id")
+      .references(() => comments.id, { onDelete: "cascade" })
+      .notNull(),
+    type: reactionType("type").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (t) => [
+    primaryKey({
+      name: "comment_reactions_pk",
+      columns: [t.userId, t.commentId],
+    }),
+  ]
+);
+
+export const commentReactionInsertSchema = createInsertSchema(commentReactions);
+export const commentReactionUpdateSchema = createUpdateSchema(commentReactions);
+export const commentReactionSelectSchema = createSelectSchema(commentReactions);
+
+export const commentReactionRelations = relations(
+  commentReactions,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [commentReactions.userId],
+      references: [users.id],
+    }),
+    comment: one(comments, {
+      fields: [commentReactions.commentId],
+      references: [comments.id],
+    }),
+  })
+);
