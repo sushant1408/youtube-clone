@@ -20,9 +20,18 @@ import { trpc } from "@/trpc/client";
 interface CommentFormProps {
   videoId: string;
   onSuccess?: () => void;
+  onCancel?: () => void;
+  parentId?: string;
+  variant?: "reply" | "comment";
 }
 
-const CommentForm = ({ videoId, onSuccess }: CommentFormProps) => {
+const CommentForm = ({
+  videoId,
+  onCancel,
+  onSuccess,
+  parentId,
+  variant = "comment",
+}: CommentFormProps) => {
   const clerk = useClerk();
   const { user } = useUser();
   const utils = trpc.useUtils();
@@ -30,6 +39,7 @@ const CommentForm = ({ videoId, onSuccess }: CommentFormProps) => {
   const create = trpc.comments.create.useMutation({
     onSuccess: () => {
       utils.comments.getMany.invalidate({ videoId });
+      utils.comments.getMany.invalidate({ videoId, parentId });
       form.reset();
 
       toast.success("Comment addded");
@@ -49,10 +59,16 @@ const CommentForm = ({ videoId, onSuccess }: CommentFormProps) => {
     // @ts-expect-error expect error
     resolver: zodResolver(commentsInsertSchema.omit({ userId: true })),
     defaultValues: {
+      parentId,
       videoId,
       value: "",
     },
   });
+
+  const handleCancel = () => {
+    form.reset();
+    onCancel?.();
+  };
 
   const onSubmit = (values: z.infer<typeof commentsInsertSchema>) => {
     create.mutate(values);
@@ -75,7 +91,11 @@ const CommentForm = ({ videoId, onSuccess }: CommentFormProps) => {
                 <FormControl>
                   <Textarea
                     {...field}
-                    placeholder="Add a comment"
+                    placeholder={
+                      variant === "reply"
+                        ? "Reply to this comment"
+                        : "Add a comment"
+                    }
                     className="resize-none bg-transparent overflow-hidden h-16 min-h-0"
                   />
                 </FormControl>
@@ -84,12 +104,23 @@ const CommentForm = ({ videoId, onSuccess }: CommentFormProps) => {
             )}
           />
           <div className="justify-end gap-2 mt-2 flex">
+            {variant === "reply" && (
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                disabled={create.isPending}
+                onClick={handleCancel}
+              >
+                Cancel
+              </Button>
+            )}
             <Button
               type="submit"
               size="sm"
               disabled={create.isPending || !form.formState.isDirty}
             >
-              Comment
+              {variant === "reply" ? "Reply" : "Comment"}
             </Button>
           </div>
         </div>
