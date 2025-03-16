@@ -20,7 +20,7 @@ interface VideoMenuProps {
   onRemove?: () => void;
 }
 
-const VideoMenu = ({ videoId, onRemove, variant }: VideoMenuProps) => {
+const VideoMenu = ({ videoId, onRemove, variant = "ghost" }: VideoMenuProps) => {
   const onShare = () => {
     const fullUrl = `${process.env.NEXT_PUBLIC_APP_URL}/videos/${videoId}`;
 

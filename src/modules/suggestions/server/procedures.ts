@@ -2,29 +2,12 @@ import { and, desc, eq, getTableColumns, lt, or } from "drizzle-orm";
 import { z } from "zod";
 
 import { db } from "@/db";
-import { videoReactions, videos, videoViews } from "@/db/schema";
-import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
+import { users, videoReactions, videos, videoViews } from "@/db/schema";
+import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
 
-const studioRouter = createTRPCRouter({
-  getOne: protectedProcedure
-    .input(z.object({ id: z.string().uuid() }))
-    .query(async ({ ctx, input }) => {
-      const { id } = input;
-      const { id: userId } = ctx.user;
-
-      const [video] = await db
-        .select()
-        .from(videos)
-        .where(and(eq(videos.id, id), eq(videos.userId, userId)));
-
-      if (!video) {
-        throw new TRPCError({ code: "NOT_FOUND" });
-      }
-
-      return video;
-    }),
-  getMany: protectedProcedure
+const suggestionsRouter = createTRPCRouter({
+  getMany: baseProcedure
     .input(
       z.object({
         cursor: z
@@ -33,16 +16,26 @@ const studioRouter = createTRPCRouter({
             updatedAt: z.date(),
           })
           .nullish(),
+        videoId: z.string().uuid(),
         limit: z.number().min(1).max(100),
       })
     )
-    .query(async ({ ctx, input }) => {
-      const { cursor, limit } = input;
-      const { id: userId } = ctx.user;
+    .query(async ({ input }) => {
+      const { cursor, limit, videoId } = input;
+
+      const [existingVideo] = await db
+        .select()
+        .from(videos)
+        .where(eq(videos.id, videoId));
+
+      if (!existingVideo) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
 
       const data = await db
         .select({
           ...getTableColumns(videos),
+          user: users,
           viewCount: db.$count(videoViews, eq(videoViews.videoId, videos.id)),
           likeCount: db.$count(
             videoReactions,
@@ -53,9 +46,12 @@ const studioRouter = createTRPCRouter({
           ),
         })
         .from(videos)
+        .innerJoin(users, eq(videos.userId, users.id))
         .where(
           and(
-            eq(videos.userId, userId),
+            existingVideo.categoryId
+              ? eq(videos.categoryId, existingVideo.categoryId)
+              : undefined,
             cursor
               ? or(
                   lt(videos.updatedAt, cursor.updatedAt),
@@ -91,4 +87,4 @@ const studioRouter = createTRPCRouter({
     }),
 });
 
-export { studioRouter };
+export { suggestionsRouter };
