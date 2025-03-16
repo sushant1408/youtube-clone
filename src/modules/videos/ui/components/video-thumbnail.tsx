@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import { Skeleton } from "@/components/ui/skeleton";
 import { THUMBNAIL_FALLBACK } from "@/lib/constants";
 import { formatDuration } from "@/lib/utils";
 
@@ -43,4 +44,12 @@ const VideoThumbnail = ({
   );
 };
 
-export { VideoThumbnail };
+const VideoThumbnailSkeleton = () => {
+  return (
+    <div className="relative w-full overflow-hidden rounded-xl aspect-video">
+      <Skeleton className="size-full" />
+    </div>
+  );
+};
+
+export { VideoThumbnail, VideoThumbnailSkeleton };

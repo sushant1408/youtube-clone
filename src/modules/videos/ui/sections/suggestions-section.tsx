@@ -6,8 +6,14 @@ import { ErrorBoundary } from "react-error-boundary";
 import { InfiniteScroll } from "@/components/infinite-scroll";
 import { DEFAULT_LIMIT } from "@/lib/constants";
 import { trpc } from "@/trpc/client";
-import { VideoGridCard } from "../components/video-grid-card";
-import { VideoRowCard } from "../components/video-row-card";
+import {
+  VideoGridCard,
+  VideoGridCardSkeleton,
+} from "../components/video-grid-card";
+import {
+  VideoRowCard,
+  VideoRowCardSkeleton,
+} from "../components/video-row-card";
 
 interface SuggestionsSectionProps {
   videoId: string;
@@ -25,7 +31,20 @@ const SuggestionsSection = ({ videoId, isManual }: SuggestionsSectionProps) => {
 };
 
 const SuggestionsSectionSkeleton = () => {
-  return <></>;
+  return (
+    <>
+      <div className="hidden md:block space-y-3">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <VideoRowCardSkeleton size="compact" key={index} />
+        ))}
+      </div>
+      <div className="block md:hidden space-y-10">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <VideoGridCardSkeleton key={index} />
+        ))}
+      </div>
+    </>
+  );
 };
 
 const SuggestionsSectionSuspense = ({

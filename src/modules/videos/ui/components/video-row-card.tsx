@@ -1,19 +1,19 @@
 import { cva, type VariantProps } from "class-variance-authority";
-import { useMemo } from "react";
 import Link from "next/link";
+import { useMemo } from "react";
 
-import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { UserInfo } from "@/modules/users/ui/components/user-info";
 import { UserAvatar } from "@/components/user-avatar";
-import { VideoMenu } from "./video-menu";
-import { VideoThumbnail } from "./video-thumbnail";
+import { cn } from "@/lib/utils";
+import { UserInfo } from "@/modules/users/ui/components/user-info";
 import { VideoGetManyOutput } from "../../types";
+import { VideoMenu } from "./video-menu";
+import { VideoThumbnail, VideoThumbnailSkeleton } from "./video-thumbnail";
 
 const videoRowCardVariants = cva("group flex min-w-0", {
   variants: {
@@ -46,7 +46,11 @@ interface VideoRowCardProps
   onRemove?: () => void;
 }
 
-const VideoRowCard = ({ data, onRemove, size }: VideoRowCardProps) => {
+const VideoRowCard = ({
+  data,
+  onRemove,
+  size = "default",
+}: VideoRowCardProps) => {
   const compactViews = useMemo(() => {
     return Intl.NumberFormat("en", { notation: "compact" }).format(
       data.viewCount
@@ -128,8 +132,37 @@ const VideoRowCard = ({ data, onRemove, size }: VideoRowCardProps) => {
   );
 };
 
-const VideoRowCardSkeleton = () => {
-  return <div></div>;
+const VideoRowCardSkeleton = ({
+  size = "default",
+}: VariantProps<typeof videoRowCardVariants> &
+  VariantProps<typeof thubmnailVariants>) => {
+  return (
+    <div className={videoRowCardVariants({ size })}>
+      <div className={thubmnailVariants({ size })}>
+        <VideoThumbnailSkeleton />
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <div className="flex justify-between gap-x-2">
+          <div className="flex-1 min-w-0">
+            <Skeleton
+              className={cn("h-5 w-[40%]", size === "compact" && "h-4 w-[40%]")}
+            />
+            {size === "default" && (
+              <>
+                <Skeleton className="h-4 w-[20%] mt-1" />
+                <div className="flex items-center gap-2 my-3">
+                  <Skeleton className="size-8 rounded-full" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+              </>
+            )}
+            {size === "compact" && <Skeleton className="h-4 w-[50%] mt-1" />}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export { VideoRowCard, VideoRowCardSkeleton };
