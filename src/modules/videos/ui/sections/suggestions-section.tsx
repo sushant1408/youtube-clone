@@ -62,18 +62,18 @@ const SuggestionsSectionSuspense = ({
   return (
     <>
       <div className="hidden md:block space-y-3">
-        {suggestions.pages.flatMap((page) =>
-          page.items.map((video) => (
+        {suggestions.pages
+          .flatMap((page) => page.items)
+          .map((video) => (
             <VideoRowCard key={video.id} data={video} size="compact" />
-          ))
-        )}
+          ))}
       </div>
       <div className="block md:hidden space-y-10">
-        {suggestions.pages.flatMap((page) =>
-          page.items.map((video) => (
+        {suggestions.pages
+          .flatMap((page) => page.items)
+          .map((video) => (
             <VideoGridCard key={video.id} data={video} />
-          ))
-        )}
+          ))}
       </div>
 
       <InfiniteScroll

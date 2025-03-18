@@ -2,11 +2,11 @@ import { DEFAULT_LIMIT } from "@/lib/constants";
 import { VideoView } from "@/modules/videos/ui/views/video-view";
 import { HydrateClient, trpc } from "@/trpc/server";
 
+export const dyamic = "force-dynamic";
+
 interface VideoIdPageProps {
   params: Promise<{ videoId: string }>;
 }
-
-export const dyamic = "force-dynamic";
 
 export default async function VideoIdPage({ params }: VideoIdPageProps) {
   const { videoId } = await params;
