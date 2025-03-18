@@ -34,8 +34,11 @@ const PlaylistAddModal = ({
   const addToPlaylist = trpc.playlists.addVideo.useMutation({
     onSuccess: (data) => {
       toast.success("Video added to playlist");
+      
       utils.playlists.getMany.invalidate();
       utils.playlists.getManyForVideo.invalidate({ videoId });
+      utils.playlists.getOne.invalidate({ id: data.playlistId });
+      utils.playlists.getManyCustom.invalidate({ playlistId: data.playlistId });
     },
     onError: (error) => {
       toast.error(error.message);
@@ -44,8 +47,11 @@ const PlaylistAddModal = ({
   const removeFromPlaylist = trpc.playlists.removeVideo.useMutation({
     onSuccess: (data) => {
       toast.success("Video removed from playlist");
+
       utils.playlists.getMany.invalidate();
       utils.playlists.getManyForVideo.invalidate({ videoId });
+      utils.playlists.getOne.invalidate({ id: data.playlistId });
+      utils.playlists.getManyCustom.invalidate({ playlistId: data.playlistId });
     },
     onError: (error) => {
       toast.error(error.message);

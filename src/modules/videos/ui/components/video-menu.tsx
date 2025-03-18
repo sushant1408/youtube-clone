@@ -2,7 +2,7 @@ import {
   ListPlusIcon,
   MoreVerticalIcon,
   ShareIcon,
-  Trash2Icon,
+  TrashIcon,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -61,8 +61,8 @@ const VideoMenu = ({
             Add to playlist
           </DropdownMenuItem>
           {onRemove && (
-            <DropdownMenuItem onClick={() => onRemove()}>
-              <Trash2Icon />
+            <DropdownMenuItem onClick={onRemove}>
+              <TrashIcon />
               Remove
             </DropdownMenuItem>
           )}
