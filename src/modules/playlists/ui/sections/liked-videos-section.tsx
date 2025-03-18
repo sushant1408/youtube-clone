@@ -15,47 +15,37 @@ import {
 } from "@/modules/videos/ui/components/video-row-card";
 import { trpc } from "@/trpc/client";
 
-interface ResultsSectionProps {
-  query: string | undefined;
-  categoryId: string | undefined;
-}
-
-const ResultsSection = ({ categoryId, query }: ResultsSectionProps) => {
+const LikedVideosSection = () => {
   return (
-    <Suspense
-      key={`${query}-${categoryId}`}
-      fallback={<ResultsSectionSkeleton />}
-    >
+    <Suspense fallback={<LikedVideosSectionSkeleton />}>
       <ErrorBoundary fallback={<p>Error...</p>}>
-        <ResultsSectionSuspense categoryId={categoryId} query={query} />
+        <LikedVideosSectionSuspense />
       </ErrorBoundary>
     </Suspense>
   );
 };
 
-const ResultsSectionSkeleton = () => {
+const LikedVideosSectionSkeleton = () => {
   return (
     <>
-      <div className="hidden md:flex flex-col gap-4">
-        {Array.from({ length: 4 }).map((_, index) => (
-          <VideoRowCardSkeleton key={index} />
-        ))}
-      </div>
-      <div className="flex flex-col gap-4 p-4 pt-6 gap-y-10 md:hidden">
+      <div className="flex flex-col gap-4 gap-y-10 md:hidden">
         {Array.from({ length: 4 }).map((_, index) => (
           <VideoGridCardSkeleton key={index} />
+        ))}
+      </div>
+      <div className="hidden flex-col gap-4 md:flex">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <VideoRowCardSkeleton key={index} size="compact" />
         ))}
       </div>
     </>
   );
 };
 
-const ResultsSectionSuspense = ({ categoryId, query }: ResultsSectionProps) => {
-  const [results, resultsQuery] = trpc.search.getMany.useSuspenseInfiniteQuery(
+const LikedVideosSectionSuspense = () => {
+  const [videos, query] = trpc.playlists.getManyLiked.useSuspenseInfiniteQuery(
     {
       limit: DEFAULT_LIMIT,
-      categoryId,
-      query,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -65,26 +55,26 @@ const ResultsSectionSuspense = ({ categoryId, query }: ResultsSectionProps) => {
   return (
     <>
       <div className="flex flex-col gap-4 gap-y-10 md:hidden">
-        {results.pages
+        {videos.pages
           .flatMap((page) => page.items)
           .map((video) => (
             <VideoGridCard key={video.id} data={video} />
           ))}
       </div>
-      <div className="md:flex flex-col gap-4 hidden">
-        {results.pages
+      <div className="hidden flex-col gap-4 md:flex">
+        {videos.pages
           .flatMap((page) => page.items)
           .map((video) => (
-            <VideoRowCard key={video.id} data={video} />
+            <VideoRowCard key={video.id} data={video} size="compact" />
           ))}
       </div>
       <InfiniteScroll
-        hasNextPage={resultsQuery.hasNextPage}
-        isFetchingNextPage={resultsQuery.isFetchingNextPage}
-        fetchNextPage={resultsQuery.fetchNextPage}
+        hasNextPage={query.hasNextPage}
+        isFetchingNextPage={query.isFetchingNextPage}
+        fetchNextPage={query.fetchNextPage}
       />
     </>
   );
 };
 
-export { ResultsSection };
+export { LikedVideosSection };
