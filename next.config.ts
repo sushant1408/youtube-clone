@@ -14,8 +14,8 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "dpv7gebbeu.ufs.sh"
-      }
+        hostname: "dpv7gebbeu.ufs.sh",
+      },
     ],
   },
 };

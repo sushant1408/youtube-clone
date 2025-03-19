@@ -37,7 +37,7 @@ export const { POST } = serve(async (context) => {
   const transcript = await context.run("get-transcript", async () => {
     const trackUrl = `https://stream.mux.com/${video.muxPlaybackId}/text/${video.muxTrackId}.txt`;
     const response = await fetch(trackUrl);
-    const text = response.text();
+    const text = await response.text();
 
     if (!text) {
       throw new Error("Transcript not found");
@@ -64,7 +64,7 @@ export const { POST } = serve(async (context) => {
     },
   });
 
-  const description = body?.choices[0]?.message.content;
+  const description = body?.choices[0]?.message?.content || video.description;
 
   if (!description) {
     throw new Error("Description not found");
@@ -73,9 +73,7 @@ export const { POST } = serve(async (context) => {
   await context.run("update-video", async () => {
     await db
       .update(videos)
-      .set({
-        description: description || video.description,
-      })
+      .set({ description })
       .where(and(eq(videos.id, video.id), eq(videos.userId, video.userId)));
   });
 });
