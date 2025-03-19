@@ -61,7 +61,9 @@ const playlistsRouter = createTRPCRouter({
             playlistVideos,
             eq(playlists.id, playlistVideos.playlistId)
           ),
-          user: users,
+          user: {
+            ...getTableColumns(users),
+          },
           thumbnailUrl: sql<string | null>`(
             SELECT v.thumbnail_url
             FROM ${playlistVideos} as pv
@@ -137,7 +139,9 @@ const playlistsRouter = createTRPCRouter({
         .with(viewerVideoViews)
         .select({
           ...getTableColumns(videos),
-          user: users,
+          user: {
+            ...getTableColumns(users),
+          },
           viewedAt: viewerVideoViews.viewedAt,
           viewCount: db.$count(videoViews, eq(videoViews.videoId, videos.id)),
           likeCount: db.$count(
@@ -220,7 +224,9 @@ const playlistsRouter = createTRPCRouter({
         .with(viewerVideoReactions)
         .select({
           ...getTableColumns(videos),
-          user: users,
+          user: {
+            ...getTableColumns(users),
+          },
           likedAt: viewerVideoReactions.likedAt,
           viewCount: db.$count(videoViews, eq(videoViews.videoId, videos.id)),
           likeCount: db.$count(
@@ -295,7 +301,9 @@ const playlistsRouter = createTRPCRouter({
             playlistVideos,
             eq(playlists.id, playlistVideos.playlistId)
           ),
-          user: users,
+          user: {
+            ...getTableColumns(users),
+          },
           containsVideo: videoId
             ? sql<boolean>`(
                 SELECT EXISTS (
@@ -529,7 +537,9 @@ const playlistsRouter = createTRPCRouter({
         .with(videosFromPlaylist)
         .select({
           ...getTableColumns(videos),
-          user: users,
+          user: {
+            ...getTableColumns(users),
+          },
           viewCount: db.$count(videoViews, eq(videoViews.videoId, videos.id)),
           likeCount: db.$count(
             videoReactions,

@@ -11,21 +11,21 @@ import {
 } from "@/modules/videos/ui/components/video-grid-card";
 import { trpc } from "@/trpc/client";
 
-interface HomeVideosSectionProps {
-  categoryId?: string;
+interface UserVideosSectionProps {
+  userId: string;
 }
 
-const HomeVideosSection = ({ categoryId }: HomeVideosSectionProps) => {
+const UserVideosSection = ({ userId }: UserVideosSectionProps) => {
   return (
-    <Suspense key={categoryId} fallback={<HomeVideosSectionSkeleton />}>
+    <Suspense fallback={<UserVideosSectionSkeleton />}>
       <ErrorBoundary fallback={<p>Error...</p>}>
-        <HomeVideosSectionSuspense categoryId={categoryId} />
+        <UserVideosSectionSuspense userId={userId} />
       </ErrorBoundary>
     </Suspense>
   );
 };
 
-const HomeVideosSectionSkeleton = () => {
+const UserVideosSectionSkeleton = () => {
   return (
     <div className="gap-4 gap-y-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
       {Array.from({ length: 4 }).map((_, index) => (
@@ -35,11 +35,11 @@ const HomeVideosSectionSkeleton = () => {
   );
 };
 
-const HomeVideosSectionSuspense = ({ categoryId }: HomeVideosSectionProps) => {
+const UserVideosSectionSuspense = ({ userId }: UserVideosSectionProps) => {
   const [videos, query] = trpc.videos.getMany.useSuspenseInfiniteQuery(
     {
       limit: DEFAULT_LIMIT,
-      categoryId,
+      userId,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -64,4 +64,4 @@ const HomeVideosSectionSuspense = ({ categoryId }: HomeVideosSectionProps) => {
   );
 };
 
-export { HomeVideosSection };
+export { UserVideosSection };

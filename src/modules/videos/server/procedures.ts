@@ -41,15 +41,18 @@ const videoRouter = createTRPCRouter({
           .nullish(),
         limit: z.number().min(1).max(100),
         categoryId: z.string().uuid().nullish(),
+        userId: z.string().uuid().nullish(),
       })
     )
     .query(async ({ input }) => {
-      const { limit, categoryId, cursor } = input;
+      const { limit, categoryId, cursor, userId } = input;
 
       const data = await db
         .select({
           ...getTableColumns(videos),
-          user: users,
+          user: {
+            ...getTableColumns(users),
+          },
           viewCount: db.$count(videoViews, eq(videoViews.videoId, videos.id)),
           likeCount: db.$count(
             videoReactions,
@@ -65,6 +68,7 @@ const videoRouter = createTRPCRouter({
           and(
             eq(videos.visibility, "public"),
             categoryId ? eq(videos.categoryId, categoryId) : undefined,
+            userId ? eq(videos.userId, userId) : undefined,
             cursor
               ? or(
                   lt(videos.updatedAt, cursor.updatedAt),
@@ -121,7 +125,9 @@ const videoRouter = createTRPCRouter({
       const data = await db
         .select({
           ...getTableColumns(videos),
-          user: users,
+          user: {
+            ...getTableColumns(users),
+          },
           viewCount,
           likeCount: db.$count(
             videoReactions,
@@ -195,7 +201,9 @@ const videoRouter = createTRPCRouter({
         .with(viewerSubscriptions)
         .select({
           ...getTableColumns(videos),
-          user: users,
+          user: {
+            ...getTableColumns(users),
+          },
           viewCount: db.$count(videoViews, eq(videoViews.videoId, videos.id)),
           likeCount: db.$count(
             videoReactions,
