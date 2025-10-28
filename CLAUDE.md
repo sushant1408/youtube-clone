@@ -2,6 +2,51 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Environment Setup
+
+### Prerequisites
+
+Before running the project, you need to set up accounts and obtain API keys:
+
+1. **Clerk** (Authentication & User Management)
+   - Create account at https://dashboard.clerk.com
+   - Create a new application
+   - Copy Publishable Key and Secret Key
+   - Configure webhook endpoint for user events
+
+2. **Neon** (PostgreSQL Database)
+   - Create account at https://console.neon.tech
+   - Create a new project
+   - Copy your connection string (DATABASE_URL)
+
+3. **Mux** (Video Hosting & Streaming)
+   - Create account at https://dashboard.mux.com
+   - Generate API token credentials
+   - Configure webhook for upload completion events
+
+4. **UploadThing** (File Uploads)
+   - Create account at https://uploadthing.com
+   - Create a new project
+   - Copy your API token
+
+5. **Upstash** (Redis + Workflows)
+   - Create account at https://console.upstash.com
+   - Create Redis database for rate limiting
+   - Create QStash for background jobs
+   - Set up ngrok tunnel for local webhook testing
+
+### Environment Variables
+
+Copy `.env.example` to `.env` and fill in your values:
+
+```bash
+cp .env.example .env
+```
+
+Then update `.env` with your actual credentials from the services above.
+
+**Important**: Never commit `.env` to version control. The `.env.example` file shows the required variables without secrets.
+
 ## Project Overview
 
 This is a **YouTube clone** built with Next.js 15, TypeScript, and a modern web stack. It's a full-featured video sharing platform with creator studio capabilities, video recommendations, commenting, playlists, subscriptions, and user profiles.
@@ -114,24 +159,6 @@ Key features:
    - `user.deleted` - Removes user
 4. Protected tRPC procedures verify user exists in DB
 
-## Environment Variables
-
-Required for full functionality:
-
-```bash
-DATABASE_URL                          # Neon PostgreSQL
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY     # Clerk auth
-CLERK_SECRET_KEY                      # Clerk auth
-CLERK_SIGNING_SECRET                  # Clerk webhook signing
-CLERK_WEBHOOK_ENDPOINT_SECRET         # Clerk dashboard webhook
-MUX_TOKEN_ID & MUX_TOKEN_SECRET       # Video hosting
-MUX_WEBHOOK_SECRET                    # Mux video events
-UPLOADTHING_TOKEN                     # File uploads
-UPSTASH_REDIS_REST_URL & TOKEN        # Rate limiting & caching
-QSTASH_TOKEN                          # Workflows
-NEXT_PUBLIC_APP_URL                   # App base URL (http://localhost:3008 dev)
-```
-
 ## Key Implementation Details
 
 ### Type-Safe APIs with tRPC
@@ -211,3 +238,81 @@ The `dev:all` script runs ngrok with a reserved URL (`great-lamprey-subtly.ngrok
 - Drizzle relations are defined via `relations()` helper; always keep schema.ts and relations in sync
 - Rate limiting is per-user, enforced at procedure level for protected routes
 - Mux asset status is stored; poll or use webhooks to detect upload completion
+
+## Project Dependencies
+
+### Framework & Core
+- `Next.js` (^15.2.3) - React framework with App Router for full-stack development
+- `React` (^19.0.0) - JavaScript library for building user interfaces with server and client components
+- `React DOM` (^19.0.0) - React package for DOM manipulation
+
+### Type Safety & Validation
+- `TypeScript` (^5) - JavaScript with static type checking
+- `Zod` (^3.24.2) - TypeScript-first schema validation with static type inference
+- `Drizzle-Zod` (^0.7.0) - Zod schema generation from Drizzle ORM models
+
+### API & Data Layer
+- `tRPC` (^11.0.0-rc.824) - End-to-end typesafe RPC framework with client, react-query, and server packages
+- `React Query` (^5.67.2) - Powerful asynchronous state management library for server state
+- `Drizzle ORM` (^0.40.0) - TypeScript ORM for SQL databases with great developer experience
+- `Drizzle-Kit` (^0.30.5) - CLI tool for Drizzle migrations and schema management
+- `@neondatabase/serverless` (^0.10.4) - Serverless PostgreSQL client for Neon database
+
+### Authentication & User Management
+- `@clerk/nextjs` (^6.12.4) - Complete authentication and user management solution with webhooks
+
+### Video & Media Services
+- `@mux/mux-node` (^10.1.0) - Mux API client for managing video assets and playback
+- `@mux/mux-player-react` (^3.3.0) - React component for streaming video playback
+- `@mux/mux-uploader-react` (^1.1.2) - React component for handling video uploads
+
+### File Uploads
+- `@uploadthing/react` (^7.3.0) - React hooks for file uploading
+- `uploadthing` (^7.5.2) - File upload solution with easy setup
+
+### Rate Limiting & Caching
+- `@upstash/redis` (^1.34.5) - Redis client for rate limiting and caching
+- `@upstash/ratelimit` (^2.0.5) - Rate limiting solution powered by Upstash Redis
+
+### Background Jobs & Workflows
+- `@upstash/workflow` (^0.2.6) - Orchestration and scheduling for background jobs
+- `Svix` (^1.61.3) - Webhook management and delivery service
+
+### UI & Styling
+- `Tailwind CSS` (^4) - Utility-first CSS framework for rapid UI development
+- `@tailwindcss/postcss` (^4) - PostCSS plugin for Tailwind CSS
+- `Tailwind Merge` (^3.0.2) - Utility to merge Tailwind CSS classes intelligently
+- `Tailwindcss-Animate` (^1.0.7) - Animation utilities for Tailwind CSS
+- `Radix UI` (multiple packages) - Unstyled, accessible React components including Avatar, Dialog, Dropdown Menu, Label, Select, Separator, Slot, Toggle Group, and Tooltip
+
+### Forms & State Management
+- `React Hook Form` (^7.54.2) - Performant, flexible form validation with hooks
+- `@hookform/resolvers` (^4.1.3) - Validation resolvers for React Hook Form
+
+### UI Components & Utilities
+- `Lucide React` (^0.479.0) - Beautiful, consistent icon library
+- `Sonner` (^2.0.1) - Toast notification library for React
+- `Vaul` (^1.1.2) - Unstyled drawer component for React
+- `Embla Carousel React` (^8.5.2) - Carousel/slider library for React
+
+### Utilities & Helpers
+- `Date-fns` (^4.1.0) - Modern date utility library
+- `Superjson` (^2.2.2) - Serialization library for complex JavaScript types (Date, Map, Set, etc.)
+- `CLSX` (^2.1.1) - Utility for constructing className strings conditionally
+- `Class Variance Authority` (^0.7.1) - Library for creating composable component APIs
+- `Next-Themes` (^0.4.4) - Theme provider for Next.js with dark mode support
+- `Concurrently` (^9.1.2) - Run multiple npm scripts concurrently
+
+### Environment & Configuration
+- `Dotenv` (^16.4.7) - Environment variable loader from .env files
+- `TSX` (^4.19.3) - TypeScript execution environment for Node.js
+
+### Bundling & Code Quality
+- `ESLint` (^9) - JavaScript linter for code quality
+- `ESLint Config Next` (15.2.1) - Next.js ESLint configuration
+- `@eslint/eslintrc` (^3) - ESLint configuration utility
+
+### Runtime Safety
+- `Server-Only` (^0.0.1) - Ensures code runs only on the server side
+- `Client-Only` (^0.0.1) - Ensures code runs only on the client side
+- `React Error Boundary` (^5.0.0) - Error boundary component for React
